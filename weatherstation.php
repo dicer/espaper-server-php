@@ -71,6 +71,21 @@
   	$hourly = $result->{'hourly_forecast'};
   	$astronomy = $result->{'moon_phase'};
 
+	$arrContextOptions=array(
+		"ssl"=>array(
+			//"verify_peer"=>false,
+			//"verify_peer_name"=>false,
+			"allow_self_signed"=>$INFLUX_ALLOW_SELFSIGNED,
+		),
+	);
+
+	if ($INFLUX_USE) {
+		$influxWeather = file_get_contents($INFLUX_QUERY, false, stream_context_create($arrContextOptions));
+		$influxResult = json_decode($influxWeather);
+		$localHumidity = $influxResult->{'results'}[0]->{'series'}[0]->{'values'}[0][1];
+		$localTemp = $influxResult->{'results'}[1]->{'series'}[0]->{'values'}[0][1];
+	}
+
   	$moon_age_char = chr(65 + 26 * (($astronomy->{'ageOfMoon'} % 30) / 30.0));
 
   	$min_temp = 999;
@@ -123,7 +138,11 @@
 		}
 		$canvas->drawString(55, 50, $condition->{'weather'});
 		$canvas->setFont("ArialPlain24");
-		$canvas->drawString(55, 25, $condition->{'temp_c'}."°C");
+		if ($INFLUX_USE) {
+			$canvas->drawString(55, 25, round($localTemp)."°C");
+		} else {
+			$canvas->drawString(55, 25, $condition->{'temp_c'}."°C");
+		}
 		$canvas->drawLine(0, 65, 296, 65);
 
 

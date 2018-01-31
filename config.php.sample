@@ -5,5 +5,14 @@
 
     //sometime the cityname returned by wunderground doesn't make sense. use this to override:
     $CITY_OVERRIDE = "Frankfurt";
-    
+
+    //enable to get humidity and temperature from your influx db
+    $INFLUX_USE = false;
+
+    //use curl to build this query: curl -G 'http://localhost:8086/query?' -vv --data-urlencode "db=physical" --data-urlencode "u=squix" --data-urlencode 'p=mypass' --data-urlencode "q=SELECT mean(\"value\") FROM .... \"location\" = 'myloc' ..."
+    //use ; to seperate two SELECT statements. Query for humidity first, then temperature (this is what the parser expects)
+    $INFLUX_QUERY = "https://127.0.0.1:8086/query?db=xxxx";
+
+    $INFLUX_ALLOW_SELFSIGNED = false;
+
 ?>
